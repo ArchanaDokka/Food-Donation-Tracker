@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Donation Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("https://cdn.wallpapersafari.com/88/90/LJ6pX5.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh; /* Ensures full screen background */
+        }
+
+        header {
+            background-color: rgba(76, 175, 80, 0.8); /* semi-transparent background */
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .container {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background for the content */
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .food-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .food-images img {
+            width: 200px;
+            height: 150px;
+            border-radius: 10px;
+        }
+
+        .map-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .details-section {
+            margin: 20px 0;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .search-bar {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            width: 80%;
+            max-width: 500px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-bar button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: #45a049;
+        }
+
+        /* Hide home content initially */
+        #homeContent {
+            display: none;
+        }
+
+        .location-details {
+            margin: 20px 0;
+        }
+
+        .location-details input {
+            padding: 10px;
+            width: 80%;
+            max-width: 500px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .location-details button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Add animation for helping hands */
+        .helping-hands {
+            position: fixed;
+            top: 20%;
+            right: 10%;
+            width: 150px;  /* Increased size */
+            height: 150px; /* Increased size */
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        /* Keyframe for pulse animation */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Toggle button styling */
+        .toggle-link {
+            cursor: pointer;
+            color: #007BFF;
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Login Page -->
+    <div id="loginPage">
+        <header>
+            <h1>Food Donation Tracker - Login</h1>
+        </header>
+
+        <div class="container">
+            <!-- Login Form -->
+            <section id="login">
+                <h2>Login</h2>
+                <form id="loginForm" onsubmit="return loginUser(event)">
+                    <label for="username">Username:</label><br>
+                    <input type="text" id="username" name="username" required><br><br>
+                    <label for="password">Password:</label><br>
+                    <input type="password" id="password" name="password" required><br><br>
+                    <button type="submit">Login</button>
+                </form>
+                <p id="loginError" style="color:red; display:none;">Invalid username or password!</p>
+                <p>Don't have an account? <span class="toggle-link" onclick="showSignup()">Sign up here</span></p>
+            </section>
+
+            <!-- Signup Form -->
+            <section id="signup" style="display:none;">
+                <h2>Sign Up</h2>
+                <form id="signupForm" onsubmit="return signupUser(event)">
+                    <label for="newUsername">Username:</label><br>
+                    <input type="text" id="newUsername" name="newUsername" required><br><br>
+                    <label for="email">Email:</label><br>
+                    <input type="email" id="email" name="email" required><br><br>
+                    <label for="newPassword">Password:</label><br>
+                    <input type="password" id="newPassword" name="newPassword" required><br><br>
+                    <button type="submit">Sign Up</button>
+                </form>
+                <p>Already have an account? <span class="toggle-link" onclick="showLogin()">Login here</span></p>
+            </section>
+        </div>
+    </div>
+
+    <!-- Home Page (Initially Hidden) -->
+    <div id="homeContent">
+        <header>
+            <h1>Food Donation Tracker</h1>
+        </header>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#helpline">Helpline</a>
+            <a href="#map">Food Locations</a>
+            <a href="#donater">Donater Details</a>
+            <a href="#receiver">Receiver Details</a>
+            <a href="#location" onclick="showLocationForm()">Location</a>
+            <a href="#login" onclick="logout()">Logout</a>
+        </nav>
+
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" placeholder="Search food, location, or details">
+                <button>Search</button>
+            </div>
+
+            <!-- Food Images -->
+            <section id="home" class="food-images">
+                <img src="https://th.bing.com/th/id/OIP.AQCI7hakEA6CTTOptHJKagHaE8?rs=1&pid=ImgDetMain" alt="Food 1">
+                <img src="https://georgetownbreadbasket.ca/wp-content/uploads/2022/08/donate-food-1024x795.jpg" alt="Food 2">
+                <img src="https://www.typecalendar.com/wp-content/uploads/2023/05/donation-goal-tracker.jpg?gid=487" alt="Food 3">
+                <img src="https://www.narayansevausa.org/wp-content/uploads/2023/10/blogfooddonationdrice.jpg" alt="Food 4">
+            </section>
+
+            <!-- Helpline Section -->
+            <section id="helpline">
+                <h2>Helpline Number</h2>
+                <p>If you need assistance, please call: <strong>+1-800-FOOD-HELP</strong></p>
+            </section>
+
+            <!-- Food Location Map -->
+            <section id="map" class="map-container">
+                <h2>Food Location Map</h2>
+                <div id="map"></div> <!-- The map will be loaded here -->
+            </section>
+
+            <!-- Donater Details -->
+            <section id="donater" class="details-section">
+                <h2>Donater Details</h2>
+                <p>Name: Archana</p>
+                <p>Contact: +91 123456789</p>
+                <p>Food Type: Freshly cooked meals</p>
+            </section>
+
+            <!-- Receiver Details -->
+            <section id="receiver" class="details-section">
+                <h2>Receiver Details</h2>
+                <p>Name: Pranathi</p>
+                <p>Contact: +91 987654321</p>
+                <p>Need: Non-perishable food item</p>
+            </section>
+
+            <!-- Location Details -->
+            <section id="location" class="location-details">
+                <h2>Location Details</h2>
+                <p>Provide your location for better matching with available donations.</p>
+                <button onclick="getLocation()">Get My Current Location</button><br><br>
+
+                <div>
+                    <input type="text" id="userLocation" placeholder="Enter your location (city, state)">
+                    <button onclick="submitLocation()">Submit Location</button>
+                </div>
+                <p id="locationOutput"></p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Add the Google Maps API script -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+
+    <script>
+        let map;
+        let marker;
+
+        // Initialize the map
+        function initMap() {
+            // Default location (centered around the world if no location is set)
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 10,
+                center: { lat: 0, lng: 0 }
+            });
+        }
+
+        // Geolocation API
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    updateMapLocation(latitude, longitude);
+                }, function(error) {
+                    alert("Unable to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Update the map with new location
+        function updateMapLocation(lat, lng) {
+            const location = { lat: lat, lng: lng };
+
+            // Update map center
+            map.setCenter(location);
+            map.setZoom(14); // Zoom in to the location
+
+            // Place marker
+            if (marker) {
+                marker.setMap(null); // Remove existing marker
+            }
+            marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "Your Location"
+            });
+
+            document.getElementById("locationOutput").innerText = `Latitude: ${lat}, Longitude: ${lng}`;
+        }
+
+        // Submit manual location (based on user input)
+        function submitLocation() {
+            const location = document.getElementById("userLocation").value;
+            if (location) {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ address: location }, function(results, status) {
+                    if (status === "OK") {
+                        const lat = results[0].geometry.location.lat();
+                        const lng = results[0].geometry.location.lng();
+                        updateMapLocation(lat, lng);
+                    } else {
+                        alert("Could not find the location. Please try again.");
+                    }
+                });
+            } else {
+                alert("Please enter a location.");
+            }
+        }
+
+        // Login function
+        function loginUser(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Retrieve user details from localStorage
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+
+            if (storedUser && storedUser.username === username && storedUser.password === password) {
+                // Hide login page and show home content
+                document.getElementById("loginPage").style.display = "none";
+                document.getElementById("homeContent").style.display = "block";
+                document.getElementById("loginError").style.display = "none";
+            } else {
+                document.getElementById("loginError").style.display = "block";
+            }
+        }
+
+        // Signup function
+        function signupUser(event) {
+            event.preventDefault();
+
+            const newUsername = document.getElementById("newUsername").value;
+            const email = document.getElementById("email").value;
+            const newPassword = document.getElementById("newPassword").value;
+
+            // Store user details in localStorage
+            const user = { username: newUsername, email: email, password: newPassword };
+            localStorage.setItem("user", JSON.stringify(user));
+
+            // Show success message
+            alert(`Welcome, ${newUsername}! You've successfully signed up with email ${email}.`);
+
+            // After successful signup, show login form
+            showLogin();
+        }
+
+        // Show the login form
+        function showLogin() {
+            document.getElementById("signup").style.display = "none";
+            document.getElementById("login").style.display = "block";
+        }
+
+        // Show the signup form
+        function showSignup() {
+            document.getElementById("login").style.display = "none";
+            document.getElementById("signup").style.display = "block";
+        }
+
+        // Logout function
+        function logout() {
+            document.getElementById("homeContent").style.display = "none";
+            document.getElementById("loginPage").style.display = "block";
+        }
+
+        // Show or hide location form
+        function showLocationForm() {
+            const locationSection = document.getElementById("location");
+            locationSection.style.display = locationSection.style.display === "none" ? "block" : "none";
+        }
+    </script>
+
+    <!-- Add the Helping Hands Animation -->
+    <img src="https://media.istockphoto.com/id/1092875824/photo/smiling-little-girl-donates-apples-to-food-bank.jpg?s=612x612&w=0&k=20&c=ValbNtdQF7otWf-v7P1j1f4E0WSJouYabqqnx-nV9xU=" class="helping-hands" alt="Helping Hands Animation" />
+
+</body>
+</html>
